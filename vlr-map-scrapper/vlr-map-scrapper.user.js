@@ -16,6 +16,19 @@
   // --- Utility functions ---
   const STORAGE_KEY = "vlr-scraper.form";
 
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  async function fetchWithTimeout(url, { timeout = 60000, signal } = {}) {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    try {
+      const res = await fetch(url, { signal: signal || controller.signal });
+      return res;
+    } finally {
+      clearTimeout(id);
+    }
+  }
+
   function loadFormState() {
     try {
       const raw = sessionStorage.getItem(STORAGE_KEY);
@@ -50,11 +63,21 @@
   }
 
   async function fetchDoc(url) {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`Fetch ${url} falhou: ${res.status}`);
-    const html = await res.text();
-    const parser = new DOMParser();
-    return parser.parseFromString(html, "text/html");
+    let lastErr;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const res = await fetchWithTimeout(url);
+        if (!res.ok) throw new Error(`Fetch ${url} falhou: ${res.status}`);
+        const html = await res.text();
+        const parser = new DOMParser();
+        return parser.parseFromString(html, "text/html");
+      } catch (e) {
+        lastErr = e;
+        const wait = 500 * Math.pow(2, attempt) + Math.random() * 300;
+        await sleep(wait);
+      }
+    }
+    throw lastErr;
   }
 
   function normalizeTeamName(name) {
@@ -198,12 +221,12 @@
   }
 
   async function navigateToMatchesTab(teamUrl) {
-    const match = teamUrl.match(/\/team\/(\d+)/);
-    if (!match) throw new Error("URL do time inválida");
+    const u = new URL(teamUrl, "https://www.vlr.gg");
+    const m = u.pathname.match(/\/team\/(\d+)\/([^/?#]+)/);
+    if (!m) throw new Error("URL do time inválida");
 
-    const teamId = match[1];
-    const teamSlug = teamUrl.split("/").pop();
-
+    const teamId = m[1];
+    const teamSlug = m[2];
     return `https://www.vlr.gg/team/matches/${teamId}/${teamSlug}?group=completed`;
   }
 
@@ -271,27 +294,51 @@
 
   function extractPicksBansFromMatchPage(doc, filterTeamName) {
     let pickBanString = "";
-    const paragraphs = Array.from(
+
+    // Primeiro tenta seletores específicos relacionados a veto/pick/ban
+    const candidates = Array.from(
       doc.querySelectorAll(
-        "p, div.match-header-note, div.match-header-vs-note, .match-header-vs-note"
+        ".match-veto, .m-veto, .veto, .match-header-note, .match-header-vs-note"
       )
     );
-
-    for (const p of paragraphs) {
-      const text = p.textContent || "";
-      if (text.includes("ban") && text.includes("pick")) {
-        pickBanString = text.trim();
-        break;
+    for (const el of candidates) {
+      const t = (el.textContent || "").toLowerCase();
+      if (t.includes("pick") || t.includes("ban") || t.includes("veto")) {
+        pickBanString = (el.textContent || "").trim();
+        if (pickBanString) break;
       }
     }
 
+    // Fallback: procurar em parágrafos comuns
     if (!pickBanString) {
-      const allText = doc.body.textContent;
+      const paragraphs = Array.from(
+        doc.querySelectorAll(
+          "p, div.match-header-note, div.match-header-vs-note, .match-header-vs-note"
+        )
+      );
+      for (const p of paragraphs) {
+        const text = p.textContent || "";
+        const lower = text.toLowerCase();
+        if (
+          (lower.includes("ban") || lower.includes("veto")) &&
+          lower.includes("pick")
+        ) {
+          pickBanString = text.trim();
+          break;
+        }
+      }
+    }
+
+    // Fallback total: varrer o texto inteiro
+    if (!pickBanString) {
+      const allText = doc.body.textContent || "";
       const lines = allText.split("\n");
       for (const line of lines) {
+        const lower = line.toLowerCase();
         if (
-          line.includes("pick") &&
-          line.includes("ban") &&
+          (lower.includes("pick") ||
+            lower.includes("ban") ||
+            lower.includes("veto")) &&
           line.includes(";")
         ) {
           pickBanString = line.trim();
@@ -302,23 +349,16 @@
 
     if (!pickBanString) return null;
 
-    console.log(`   📝 Pick/ban string encontrada`);
-
     const actions = [];
     const parts = pickBanString.split(/[;,]/).map((s) => s.trim());
 
     for (const part of parts) {
-      const lower = part.toLowerCase();
-      let action = null;
-      if (lower.includes(" ban ")) action = "ban";
-      else if (lower.includes(" pick ")) action = "pick";
-
-      if (!action) continue;
-
-      const regex = /(.*?)\s+(ban|pick)\s+(.*)/i;
-      const match = part.match(regex);
+      // aceitar "veto" como "ban"
+      const normalized = part.replace(/\bveto\b/gi, "ban");
+      const match = normalized.match(/(.*?)\s+(ban|pick)\s+(.*)/i);
       if (match) {
         let team = match[1].trim();
+        const action = match[2].toLowerCase();
         let map = match[3].trim();
 
         team = team.replace(/\./g, " ").replace(/\s+/g, " ");
@@ -326,7 +366,6 @@
 
         if (teamMatches(team, filterTeamName)) {
           actions.push({ team, action, map });
-          console.log(`      ✓ ${action}: ${map}`);
         }
       }
     }
