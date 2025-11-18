@@ -14,6 +14,25 @@
   "use strict";
 
   // --- Utility functions ---
+  const STORAGE_KEY = "vlr-scraper.form";
+
+  function loadFormState() {
+    try {
+      const raw = sessionStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function saveFormState(partial) {
+    try {
+      const prev = loadFormState() || {};
+      const next = { ...prev, ...partial, _ts: Date.now() };
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    } catch (e) {}
+  }
+
   function absoluteUrl(href) {
     if (!href) return null;
     if (href.startsWith("http")) return href;
@@ -595,12 +614,15 @@
     // Toggle modal
     floatingBtn.onclick = () => {
       const isVisible = container.style.display === "block";
-      container.style.display = isVisible ? "none" : "block";
+      const nextVisible = !isVisible;
+      container.style.display = nextVisible ? "block" : "none";
+      saveFormState({ modalVisible: nextVisible });
     };
 
     const closeBtn = container.querySelector("#scr_close");
     closeBtn.onclick = () => {
       container.style.display = "none";
+      saveFormState({ modalVisible: false });
     };
 
     // Drag & drop
@@ -638,12 +660,53 @@
     const progress = container.querySelector("#scr_progress");
     const results = container.querySelector("#scr_results");
 
+    const teamInput = container.querySelector("#scr_team");
+    const eventInput = container.querySelector("#scr_event");
+    const fromInput = container.querySelector("#scr_from");
+    const toInput = container.querySelector("#scr_to");
+    const limitInput = container.querySelector("#scr_limit");
+
+    const saved = loadFormState();
+    if (saved) {
+      if (typeof saved.team === "string") teamInput.value = saved.team;
+      if (typeof saved.event === "string") eventInput.value = saved.event;
+      if (typeof saved.from === "string") fromInput.value = saved.from;
+      if (typeof saved.to === "string") toInput.value = saved.to;
+      if (saved.limit != null) limitInput.value = saved.limit;
+      if (typeof saved.modalVisible === "boolean") {
+        container.style.display = saved.modalVisible ? "block" : "none";
+      }
+    }
+
+    const persist = () =>
+      saveFormState({
+        team: (teamInput.value || "").trim(),
+        event: (eventInput.value || "").trim(),
+        from: (fromInput.value || "").trim(),
+        to: (toInput.value || "").trim(),
+        limit: parseInt(limitInput.value) || 0,
+      });
+
+    teamInput.addEventListener("input", persist);
+    eventInput.addEventListener("input", persist);
+    fromInput.addEventListener("change", persist);
+    toInput.addEventListener("change", persist);
+    limitInput.addEventListener("input", persist);
+
     runBtn.onclick = async () => {
-      const team = container.querySelector("#scr_team").value.trim() || null;
-      const event = container.querySelector("#scr_event").value.trim() || null;
-      const from = container.querySelector("#scr_from").value.trim();
-      const to = container.querySelector("#scr_to").value.trim();
-      const lim = parseInt(container.querySelector("#scr_limit").value) || 200;
+      const team = teamInput.value.trim() || null;
+      const event = eventInput.value.trim() || null;
+      const from = fromInput.value.trim();
+      const to = toInput.value.trim();
+      const lim = parseInt(limitInput.value) || 200;
+
+      saveFormState({
+        team: team || "",
+        event: event || "",
+        from,
+        to,
+        limit: lim,
+      });
 
       if (!team) {
         alert("❌ Por favor, insira a URL do time!");
