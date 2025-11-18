@@ -636,7 +636,7 @@
       
       <div style="margin-bottom:16px;">
         <label style="display:block;margin-bottom:4px;font-size:12px;color:#aaa;">Limite de matches</label>
-        <input id="scr_limit" type="number" value="200" style="width:100%;padding:8px;background:#1a1a1a;border:1px solid #444;border-radius:6px;color:#e0e0e0;font-size:13px;"/>
+        <input id="scr_limit" type="number" value="20" style="width:100%;padding:8px;background:#1a1a1a;border:1px solid #444;border-radius:6px;color:#e0e0e0;font-size:13px;"/>
       </div>
       
       <button id="scr_run" style="width:100%;padding:12px;background:linear-gradient(135deg, #ff4655 0%, #ff1744 100%);border:none;border-radius:6px;color:white;font-weight:600;font-size:14px;cursor:pointer;transition:all 0.3s;">
@@ -737,7 +737,7 @@
       const event = eventInput.value.trim() || null;
       const from = fromInput.value.trim();
       const to = toInput.value.trim();
-      const lim = parseInt(limitInput.value) || 200;
+      const lim = parseInt(limitInput.value) || 20;
 
       saveFormState({
         team: team || "",
@@ -848,26 +848,27 @@
               <th style="padding:10px;text-align:left;color:#aaa;font-weight:600;font-size:12px;">Mapa</th>
               <th style="padding:10px;text-align:center;color:#4caf50;font-weight:600;font-size:12px;">Picks</th>
               <th style="padding:10px;text-align:center;color:#ff4655;font-weight:600;font-size:12px;">Bans</th>
-              <th style="padding:10px;text-align:center;color:#2196f3;font-weight:600;font-size:12px;">Total</th>
+              <th style="padding:10px;text-align:center;color:#2196f3;font-weight:600;font-size:12px;">Ban Rate</th>
             </tr>
           </thead>
           <tbody>
     `;
 
     const sortedMaps = Object.entries(aggregatedByMap).sort((a, b) => {
-      const totalA = a[1].pick + a[1].ban;
-      const totalB = b[1].pick + b[1].ban;
-      return totalB - totalA;
+      // Ordena por número de bans (equivale a ordenar por ban rate)
+      return b[1].ban - a[1].ban;
     });
 
+    const totalSeries = Math.max(1, teamStats.matches || 0);
     for (const [map, stats] of sortedMaps) {
-      const total = stats.pick + stats.ban;
+      const banRate = totalSeries > 0 ? (stats.ban / totalSeries) * 100 : 0;
+      const banRateStr = `${banRate.toFixed(1)}%`;
       html += `
         <tr style="border-top:1px solid #333;">
           <td style="padding:10px;color:#e0e0e0;font-weight:500;">${map}</td>
           <td style="padding:10px;text-align:center;color:#4caf50;font-weight:600;">${stats.pick}</td>
           <td style="padding:10px;text-align:center;color:#ff4655;font-weight:600;">${stats.ban}</td>
-          <td style="padding:10px;text-align:center;color:#2196f3;font-weight:600;">${total}</td>
+          <td style="padding:10px;text-align:center;color:#2196f3;font-weight:600;">${banRateStr}</td>
         </tr>
       `;
     }
