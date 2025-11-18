@@ -55,7 +55,7 @@ Ideal para analistas, coaches e entusiastas que desejam estudar padrões estrat�
 2. **Instale o script**:
 
    - Clique em [**vlr-map-scrapper.user.js**](https://github.com/dollyzn/vlr-pick-bans-scrapper/raw/main/vlr-map-scrapper/vlr-map-scrapper.user.js)
-   - Ou copie o código e crie um novo script no Tampermonkey
+   - Ou copie o código [**aqui**](https://github.com/dollyzn/vlr-pick-bans-scrapper/blob/main/vlr-map-scrapper/vlr-map-scrapper.user.js) e crie um novo script no Tampermonkey
 
 3. **Acesse o VLR.gg** - o ícone flutuante aparecerá automaticamente! 📊
 
