@@ -8,7 +8,18 @@
 
 Um userscript poderoso para extrair dados de picks e bans de mapas do **VLR.gg** (Valorant esports).
 
-[Instalação](#-instalação) • [Como Usar](#-como-usar) • [Features](#-features) • [Screenshots](#-screenshots) • [Exemplo](#-exemplo-de-saída-json)
+[Instalação](#-instalação) • [Como Usar](#-como-usar) • [Features](#-features) • [Exemplo](#-exemplo-de-saída-json)
+
+</div>
+
+## 🖼️ Screenshots
+
+<div align="center">
+
+<img src="./.github/screenshots/ui-modal.png" alt="Janela do VLR Picks/Bans Scraper" width="420" />
+
+<br/>
+<sub style="color:#777">Prévia do ícone e da interface do scraper.</sub>
 
 </div>
 
@@ -90,17 +101,6 @@ O script exibirá:
 ### 5. Exporte os Dados
 
 Clique em **💾 Exportar JSON** para salvar os dados completos.
-
-## 🖼️ Screenshots
-
-<div align="center">
-
-<img src="./.github/screenshots/ui-modal.png" alt="Janela do VLR Picks/Bans Scraper" width="420" />
-
-<br/>
-<sub style="color:#777">Prévia do ícone e da interface do scraper.</sub>
-
-</div>
 
 ## 📊 Exemplo de Saída (JSON)
 
