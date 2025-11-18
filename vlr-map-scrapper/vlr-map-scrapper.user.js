@@ -1,7 +1,9 @@
 // ==UserScript==
-// @name         VLR.gg Map Picks/Bans Scraper v10
-// @namespace    http://tampermonkey.net/
+// @name         VLR.gg Map Picks/Bans Scraper
+// @namespace    https://github.com/dollyzn/vlr-pick-bans-scrapper
 // @version      1.0
+// @updateURL    https://github.com/dollyzn/vlr-pick-bans-scrapper/raw/main/vlr-map-scrapper/vlr-map-scrapper.user.js
+// @downloadURL  https://github.com/dollyzn/vlr-pick-bans-scrapper/raw/main/vlr-map-scrapper/vlr-map-scrapper.user.js
 // @description  Scrape picks/bans de mapas do vlr.gg - versão final com paginação e UI draggable
 // @author       dollyzn
 // @match        https://www.vlr.gg/*
