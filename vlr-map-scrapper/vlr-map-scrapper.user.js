@@ -557,7 +557,7 @@
       position: fixed;
       right: 20px;
       bottom: 20px;
-      z-index: 999998;
+      z-index: 2147483647;
       width: 56px;
       height: 56px;
       border-radius: 50%;
