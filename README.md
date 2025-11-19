@@ -8,7 +8,7 @@
 
 Um userscript poderoso para extrair dados de picks e bans de mapas do **VLR.gg** (Valorant esports).
 
-[Instalação](#-instalação) • [Como Usar](#-como-usar) • [Features](#-features) • [Exemplo](#-exemplo-de-saída-json)
+[Instalação](#-instalação) • [Extensão Opera](#-extensão-opera) • [Como Usar](#-como-usar) • [Features](#-features) • [Exemplo](#-exemplo-de-saída-json)
 
 </div>
 
@@ -16,7 +16,9 @@ Um userscript poderoso para extrair dados de picks e bans de mapas do **VLR.gg**
 
 <div align="center">
 
-<img src="./.github/screenshots/ui-modal.png" alt="Janela do VLR Picks/Bans Scraper" width="420" />
+<br/>
+
+<img src="./.github/screenshots/popup.png" alt="Popup da extensão no Opera" width="300" align="top"  /> <img src="./.github/screenshots/form-ui.png" alt="Overlay/UI da extensão no VLR.gg (Opera)" width="400" align="top" />
 
 <br/>
 <sub style="color:#777">Prévia do ícone e da interface do scraper.</sub>
@@ -69,6 +71,21 @@ Ideal para analistas, coaches e entusiastas que desejam estudar padrões estrat�
    - Ou copie o código [**aqui**](https://github.com/dollyzn/vlr-pick-bans-scrapper/blob/main/vlr-map-scrapper/vlr-map-scrapper.user.js) e crie um novo script no Tampermonkey
 
 3. **Acesse o VLR.gg** - o ícone flutuante aparecerá automaticamente! 📊
+
+---
+
+## 🧩 Extensão Opera
+
+Inicialmente, a extensão será disponibilizada no Opera. Enquanto a publicação é revisada, você pode usar a versão de desenvolvimento (unpacked):
+
+### Instalar no Opera (Unpacked)
+
+1. Abra `opera://extensions`
+2. Ative o modo desenvolvedor
+3. Clique em "Carregar sem empacotar"
+4. Selecione a pasta `extension/src/`
+
+Após carregar, abra o site `https://www.vlr.gg` e use `Ctrl + Shift + V` para abrir a UI da extensão.
 
 ## 📖 Como Usar
 

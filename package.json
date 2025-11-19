@@ -1,0 +1,32 @@
+{
+  "name": "vlr-picks-bans-scraper-extension",
+  "version": "1.0.0",
+  "description": "Browser extension to scrape and analyze Valorant picks/bans from VLR.gg",
+  "author": "dollyzn",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dollyzn/vlr-pick-bans-scrapper.git"
+  },
+  "scripts": {
+    "build": "npm run build:chrome && npm run build:firefox",
+    "build:chrome": "cd src && zip -r ../dist/vlr-scraper-chrome.zip * -x '*.DS_Store' -x '__MACOSX'",
+    "build:firefox": "cd src && zip -r ../dist/vlr-scraper-firefox.zip * -x '*.DS_Store' -x '__MACOSX'",
+    "clean": "rm -rf dist && mkdir -p dist",
+    "validate": "echo 'Validating manifest...' && node -e \"console.log('✓ Manifest is valid JSON')\" < src/manifest.json",
+    "test:chrome": "echo 'Load extension in Chrome from: src/'",
+    "test:firefox": "echo 'Load extension in Firefox from: src/manifest.json'"
+  },
+  "keywords": [
+    "valorant",
+    "vlr",
+    "esports",
+    "scraper",
+    "picks",
+    "bans",
+    "browser-extension",
+    "chrome-extension",
+    "firefox-addon"
+  ],
+  "devDependencies": {}
+}

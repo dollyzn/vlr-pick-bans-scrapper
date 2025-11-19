@@ -1,0 +1,53 @@
+{
+  "manifest_version": 3,
+  "name": "VLR.gg Picks/Bans Scraper",
+  "version": "1.0.0",
+  "description": "Analise picks e bans de mapas do Valorant diretamente no VLR.gg",
+  "author": "dollyzn",
+  "homepage_url": "https://github.com/dollyzn/vlr-pick-bans-scrapper",
+
+  "icons": {
+    "16": "assets/icon-16.png",
+    "48": "assets/icon-48.png",
+    "128": "assets/icon-128.png"
+  },
+
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "assets/icon-16.png",
+      "48": "assets/icon-48.png",
+      "128": "assets/icon-128.png"
+    },
+    "default_title": "VLR Picks/Bans Scraper"
+  },
+
+  "permissions": ["storage", "activeTab"],
+
+  "host_permissions": ["https://www.vlr.gg/*"],
+
+  "content_scripts": [
+    {
+      "matches": ["https://www.vlr.gg/*"],
+      "js": [
+        "utils/helpers.js",
+        "utils/storage.js",
+        "utils/scraper.js",
+        "content/content-script.js"
+      ],
+      "css": ["content/content-script.css"],
+      "run_at": "document_idle"
+    }
+  ],
+
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+
+  "web_accessible_resources": [
+    {
+      "resources": ["assets/*"],
+      "matches": ["https://www.vlr.gg/*"]
+    }
+  ]
+}
